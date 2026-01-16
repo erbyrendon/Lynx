@@ -67,10 +67,47 @@ See `ADMIN_SETUP.md` for details on creating admin users.
 
 ---
 
+### 5. Function Search Path Mutable
+**Status**: Fixed
+**Migration**: `fix_security_issues`
+
+**Issue**: The `is_admin()` function had a mutable search_path, which could allow schema hijacking attacks.
+
+**Fix**: Added explicit `SET search_path = public, auth` to the function definition, making the search path immutable and secure.
+
+---
+
+### 6. Unindexed Foreign Keys
+**Status**: Fixed
+**Migration**: `fix_security_issues`
+
+**Issue**: The `sections.tab_id` foreign key didn't have a proper covering index, leading to suboptimal query performance.
+
+**Fix**: Recreated the index on `sections(tab_id)` to ensure optimal performance for JOIN operations.
+
+---
+
+### 7. Contact Form RLS Policy Validation
+**Status**: Fixed
+**Migration**: `fix_security_issues`
+
+**Previous Issue**: The contact form INSERT policy had `WITH CHECK (true)`, allowing completely unrestricted submissions (including empty or malicious data).
+
+**New Validation Requirements**:
+- All required fields (name, email, business, message) must not be empty
+- Email must match basic format validation pattern
+- Reasonable length limits to prevent abuse:
+  - name: max 100 characters
+  - email: max 255 characters
+  - business: max 200 characters
+  - message: max 5000 characters
+
+---
+
 ## Remaining Issue ⚠️
 
 ### Auth DB Connection Strategy
-**Status**: Not Fixed (Configuration Issue)
+**Status**: Not Fixed (Configuration Issue - Manual Fix Required)
 
 **Issue**: The Auth server is configured to use a fixed number of connections (10) instead of percentage-based allocation.
 
@@ -79,10 +116,10 @@ See `ADMIN_SETUP.md` for details on creating admin users.
 **Fix Required**: This must be fixed in Supabase Dashboard (not via migration):
 
 1. Go to your Supabase Project Dashboard
-2. Navigate to Settings > Database
-3. Find "Auth Connection Pool" settings
-4. Change from "Fixed number" to "Percentage-based"
-5. Set to recommended percentage (usually 10-20% of max connections)
+2. Navigate to **Settings > Database**
+3. Scroll to **"Connection Pooling"** or **"Auth Connection Pool"** settings
+4. Change from **"Fixed number"** to **"Percentage-based"**
+5. Set to recommended percentage (usually **10-20%** of max connections)
 
 **Why this matters**:
 - Fixed connections don't scale with instance upgrades
@@ -97,10 +134,10 @@ See `ADMIN_SETUP.md` for details on creating admin users.
 2. ✅ **Role-Based Access Control**: Admin role properly implemented
 3. ✅ **Public Read Access**: Website content accessible without authentication
 4. ✅ **Secure Write Access**: Only admins can modify content
-5. ✅ **Proper RLS Policies**: All policies have explicit conditions
-6. ✅ **No Overly Permissive Policies**: No dangerous `USING (true)` policies remain*
-
-*Note: The contact form has `WITH CHECK (true)` for INSERT, which is intentional to allow public submissions. The data is protected because only admins can view, update, or delete submissions.
+5. ✅ **Proper RLS Policies**: All policies have explicit conditions with validation
+6. ✅ **No Overly Permissive Policies**: All policies now have proper validation checks
+7. ✅ **Immutable Function Search Paths**: Functions protected against schema hijacking
+8. ✅ **Optimized Foreign Key Indexes**: All foreign keys properly indexed for performance
 
 ---
 
