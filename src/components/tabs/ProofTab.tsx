@@ -155,18 +155,18 @@ export default function ProofTab() {
                     <div className="relative">
                       <video
                         className="w-full h-auto"
-                        autoPlay
+                        controls
                         loop
-                        muted
                         playsInline
+                        preload="metadata"
                       >
                         <source src={featuredClient.videoFile} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full">
                         <div className="flex items-center gap-2 text-white">
-                          <Play className="w-4 h-4" />
-                          <p className="text-sm font-medium">
+                          <Play className="w-3 h-3" />
+                          <p className="text-xs font-medium">
                             {language === 'en' ? 'Video Testimonial' : 'Testimonio en Video'}
                           </p>
                         </div>
