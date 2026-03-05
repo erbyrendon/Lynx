@@ -7,7 +7,7 @@ import AboutTab from './tabs/AboutTab';
 import StoryTab from './tabs/StoryTab';
 import ServicesTab from './tabs/ServicesTab';
 import ValuesTab from './tabs/ValuesTab';
-import ImpactTab from './tabs/ImpactTab';
+import ProofTab from './tabs/ProofTab';
 import ContactTab from './tabs/ContactTab';
 
 export default function TabbedLanding() {
@@ -52,8 +52,10 @@ export default function TabbedLanding() {
         return <ServicesTab />;
       case 'values':
         return <ValuesTab />;
+      case 'proof':
+        return <ProofTab />;
       case 'impact':
-        return <ImpactTab />;
+        return <ProofTab />;
       case 'contact':
         return <ContactTab />;
       default:
