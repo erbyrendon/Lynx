@@ -141,9 +141,29 @@ export default function Proof() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-16">
             Every number represents real transformation. Every metric reflects measurable clarity and flow in multi-team workflows.
           </p>
+        </div>
+
+        <div
+          className={`max-w-5xl mx-auto transition-all duration-1000 delay-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <div className="relative rounded-2xl overflow-hidden border border-gray-800 hover:border-electric-blue transition-colors duration-500 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <video
+              className="w-full h-auto"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src="/CLiente_Tattoo_prueba.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
       </div>
     </section>
