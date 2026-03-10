@@ -153,21 +153,17 @@ export default function ProofTab() {
                   <div className="relative rounded-2xl overflow-hidden border-2 border-electric-blue/40 hover:border-electric-blue transition-colors duration-500 group w-full">
                     <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     <div className="relative aspect-video bg-black">
-                      <video
+                      <img
+                        src={featuredClient.showcaseImage}
+                        alt={featuredClient.businessName}
                         className="w-full h-full object-cover"
-                        controls
-                        loop
-                        playsInline
-                        preload="metadata"
-                      >
-                        <source src="/CLiente_Tattoo_prueba_lynx.mp4" type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                       <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm px-3 py-2 rounded-full border border-electric-blue/30">
                         <div className="flex items-center gap-2 text-white">
-                          <Play className="w-4 h-4 text-electric-blue" />
+                          <Star className="w-4 h-4 text-electric-blue fill-electric-blue" />
                           <p className="text-xs font-semibold">
-                            {language === 'en' ? 'Client Testimonial' : 'Testimonio del Cliente'}
+                            {language === 'en' ? 'Featured Project' : 'Proyecto Destacado'}
                           </p>
                         </div>
                       </div>
