@@ -86,7 +86,7 @@ export default function Proof() {
               muted
               playsInline
             >
-              <source src="/CLiente_Tattoo_prueba.mp4" type="video/mp4" />
+              <source src="/CLiente_Tattoo_prueba_lynx.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
