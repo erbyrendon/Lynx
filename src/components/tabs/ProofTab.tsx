@@ -1,242 +1,249 @@
-import { useState, useEffect } from 'react';
-import { Quote, ArrowLeft, ArrowRight, User } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Quote, Play, Building2, TrendingUp, Users } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-interface Testimonial {
-  name: string;
-  role: string;
-  businessType: string;
-  projectType: string;
-  text: {
-    en: string;
-    es: string;
-  };
-  image?: string;
-}
+const featuredClient = {
+  businessName: 'Ink & Soul Tattoo Studio',
+  owner: 'Elena Martinez',
+  role: 'Owner & Lead Artist',
+  location: 'Portland, Oregon',
+  service: 'Complete Digital Transformation & Brand Refresh',
+  rating: 5,
+  showcaseImage: 'https://images.pexels.com/photos/1407269/pexels-photo-1407269.jpeg?auto=compress&cs=tinysrgb&w=800',
+  testimonial: 'Working with Lynx was transformative for our business. They didn\'t just build us a website—they completely reimagined how we connect with clients. Our online booking system has cut administrative time by 60%, and the custom portfolio showcase they designed has become our best sales tool. What impressed me most was their understanding of the tattoo industry. They took time to learn our craft, our challenges, and our vision. The result? A 140% increase in quality bookings and a waiting list that\'s grown from 2 weeks to 3 months.',
+  results: [
+    { icon: TrendingUp, label: '140% increase in bookings', value: '140%' },
+    { icon: Users, label: 'Waiting list growth', value: '3 months' },
+    { icon: Building2, label: 'Admin time saved', value: '60%' }
+  ],
+  image: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=400'
+};
 
-const testimonials: Testimonial[] = [
+const clientReviews = [
   {
-    name: 'Marcus Rivera',
-    role: 'Owner',
-    businessType: 'Tattoo Studio',
-    projectType: 'Website & Booking System',
-    text: {
-      en: 'LYNX helped us redesign our website and connect it to a booking system. The process was structured and easy to follow, and the final result feels much more professional than what we had before. Clients now book directly through the site, which has reduced the back-and-forth messaging significantly.',
-      es: 'LYNX nos ayudó a rediseñar nuestro sitio web y conectarlo a un sistema de reservas. El proceso fue estructurado y fácil de seguir, y el resultado final se siente mucho más profesional que lo que teníamos antes. Los clientes ahora reservan directamente a través del sitio, lo que ha reducido significativamente los mensajes de ida y vuelta.'
-    },
+    name: 'Michael Thompson',
+    businessName: 'Thompson & Associates Law Firm',
+    role: 'Managing Partner',
+    service: 'Website Redesign & SEO Strategy',
+    rating: 5,
+    text: 'Our old website was turning potential clients away. Lynx rebuilt it from the ground up with a focus on user experience and conversion. Within three months, our consultation requests doubled, and we\'re now ranking on page one for our key practice areas. Their attention to detail and responsiveness throughout the project was exceptional.',
     image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'Dr. Sofia Mendez',
-    role: 'Practice Manager',
-    businessType: 'Medical Clinic',
-    projectType: 'Website & Appointment System',
-    text: {
-      en: 'We needed a simple way for patients to schedule appointments online. The team built us a clean website with an integrated booking system that works well on mobile. Our front desk staff spends less time on the phone now, and patients appreciate being able to book anytime.',
-      es: 'Necesitábamos una forma sencilla para que los pacientes programaran citas en línea. El equipo nos construyó un sitio web limpio con un sistema de reservas integrado que funciona bien en móvil. Nuestro personal de recepción pasa menos tiempo en el teléfono ahora, y los pacientes aprecian poder reservar en cualquier momento.'
-    },
+    name: 'Sarah Chen',
+    businessName: 'Bloom Organic Skincare',
+    role: 'Founder & CEO',
+    service: 'E-commerce Platform & Marketing Automation',
+    rating: 5,
+    text: 'As a small business competing with major brands, we needed every advantage. Lynx built us a beautiful e-commerce platform that converts visitors into customers at nearly 4x the industry average. The automated email campaigns they set up have become our most profitable marketing channel. They truly invested in understanding our brand values and our customers.',
     image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'James Chen',
-    role: 'Founder',
-    businessType: 'Home Services Company',
-    projectType: 'CRM & Lead Management',
-    text: {
-      en: 'Working with the team helped us organize how we handle new client inquiries. Before, everything was scattered between messages and emails. Now everything is tracked through a clear system and it\'s much easier to follow up with potential clients. We don\'t lose leads in the shuffle anymore.',
-      es: 'Trabajar con el equipo nos ayudó a organizar cómo manejamos las consultas de nuevos clientes. Antes, todo estaba disperso entre mensajes y correos electrónicos. Ahora todo se rastrea a través de un sistema claro y es mucho más fácil dar seguimiento a los clientes potenciales. Ya no perdemos leads en el proceso.'
-    },
+    name: 'James Rodriguez',
+    businessName: 'Fitness First Training Center',
+    role: 'Owner',
+    service: 'Member Portal & Class Booking System',
+    rating: 5,
+    text: 'The custom member portal Lynx developed has revolutionized how we operate. Members can book classes, track progress, and manage their accounts seamlessly. Our front desk staff went from spending 80% of their time on administrative tasks to focusing on member experience. The system paid for itself in labor savings within 4 months.',
     image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'Elena Kowalski',
-    role: 'Creative Director',
-    businessType: 'Design Agency',
-    projectType: 'Workflow Automation',
-    text: {
-      en: 'Our project management was a mess of spreadsheets and email threads. LYNX set up automated workflows that handle client onboarding and project tracking. It took some adjustment, but now our team has a much clearer view of what\'s happening across all projects.',
-      es: 'Nuestra gestión de proyectos era un desorden de hojas de cálculo e hilos de correo electrónico. LYNX configuró flujos de trabajo automatizados que manejan la incorporación de clientes y el seguimiento de proyectos. Tomó algo de ajuste, pero ahora nuestro equipo tiene una visión mucho más clara de lo que está sucediendo en todos los proyectos.'
-    },
+    name: 'Dr. Amanda Foster',
+    businessName: 'Foster Dental Wellness',
+    role: 'Practice Owner',
+    service: 'Patient Management System & Telehealth Integration',
+    rating: 5,
+    text: 'Lynx delivered exactly what we needed during a critical transition to hybrid care. The patient portal they built integrates perfectly with our existing systems, and the telehealth functionality opened up a new revenue stream. Patient satisfaction scores increased by 35% since launch. Their healthcare industry knowledge was evident in every decision.',
     image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=200'
-  },
-  {
-    name: 'David Thompson',
-    role: 'Owner',
-    businessType: 'Online Retail Store',
-    projectType: 'Website Optimization',
-    text: {
-      en: 'Our old website was slow and difficult to navigate on phones. The team rebuilt it with a focus on speed and mobile usability. The checkout process is smoother now, and we\'ve noticed fewer people abandoning their carts. The site just works better overall.',
-      es: 'Nuestro antiguo sitio web era lento y difícil de navegar en teléfonos. El equipo lo reconstruyó con un enfoque en velocidad y usabilidad móvil. El proceso de pago es más fluido ahora, y hemos notado que menos personas abandonan sus carritos. El sitio simplemente funciona mejor en general.'
-    },
-    image: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200'
-  },
-  {
-    name: 'Ana García',
-    role: 'Operations Manager',
-    businessType: 'Consulting Firm',
-    projectType: 'Brand Identity & Website',
-    text: {
-      en: 'We were starting fresh and needed a professional online presence. LYNX handled our branding and built a website that represents what we do clearly. The communication throughout was straightforward, and they delivered what they promised within the timeline we discussed.',
-      es: 'Estábamos empezando de cero y necesitábamos una presencia en línea profesional. LYNX manejó nuestra marca y construyó un sitio web que representa claramente lo que hacemos. La comunicación fue directa, y entregaron lo que prometieron dentro del plazo que discutimos.'
-    },
-    image: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200'
   }
 ];
 
 export default function ProofTab() {
   const { language } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % Math.ceil(testimonials.length / 2));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + Math.ceil(testimonials.length / 2)) % Math.ceil(testimonials.length / 2));
-  };
-
-  const visibleTestimonials = testimonials.slice(currentSlide * 2, currentSlide * 2 + 2);
-
   return (
-    <div className="p-8 md:p-12">
-      <div className="max-w-6xl mx-auto">
+    <div ref={sectionRef} className="p-12">
+      <div className="max-w-7xl mx-auto">
         <div
           className={`text-center mb-16 transition-all duration-1000 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">
-            {language === 'en' ? 'What Our Clients Say' : 'Lo Que Dicen Nuestros Clientes'}
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            {language === 'en' ? 'Client' : 'Historias de'} <span className="gradient-text">{language === 'en' ? 'Success Stories' : 'Éxito'}</span>
           </h2>
-          <p className="text-base text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto">
             {language === 'en'
-              ? 'Feedback from businesses we\'ve worked with on digital infrastructure, websites, and operational systems.'
-              : 'Comentarios de empresas con las que hemos trabajado en infraestructura digital, sitios web y sistemas operativos.'}
+              ? 'Real results from businesses we\'ve helped transform through strategic digital solutions'
+              : 'Resultados reales de empresas que hemos ayudado a transformar a través de soluciones digitales estratégicas'}
           </p>
         </div>
 
-        <div className="hidden lg:block mb-16">
-          <div
-            className={`relative transition-all duration-1000 delay-200 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-          >
-            <div className="flex gap-6">
-              {visibleTestimonials.map((testimonial, index) => (
-                <TestimonialCard
-                  key={`${currentSlide}-${index}`}
-                  testimonial={testimonial}
-                  language={language}
-                />
-              ))}
-            </div>
-
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                onClick={prevSlide}
-                className="p-3 rounded-full border border-gray-700 hover:border-electric-blue hover:bg-electric-blue/10 transition-all duration-300"
-                aria-label="Previous testimonials"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
-              </button>
-              <div className="flex gap-2">
-                {Array.from({ length: Math.ceil(testimonials.length / 2) }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentSlide(idx)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      idx === currentSlide ? 'bg-electric-blue w-6' : 'bg-gray-600 hover:bg-gray-500'
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={nextSlide}
-                className="p-3 rounded-full border border-gray-700 hover:border-electric-blue hover:bg-electric-blue/10 transition-all duration-300"
-                aria-label="Next testimonials"
-              >
-                <ArrowRight className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:hidden">
-          <div className="space-y-6">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className={`transition-all duration-700 ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: `${index * 100 + 200}ms` }}
-              >
-                <TestimonialCard testimonial={testimonial} language={language} />
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div
-          className={`mt-16 text-center transition-all duration-1000 delay-500 ${
+          className={`mb-20 transition-all duration-1000 delay-200 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <div className="inline-block relative rounded-2xl overflow-hidden border border-gray-800 bg-dark-gray/50 max-w-3xl">
-            <video
-              className="w-full aspect-video object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/CLiente_Tattoo_prueba_lynx.mp4" type="video/mp4" />
-            </video>
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-              <p className="text-sm text-gray-300">
-                {language === 'en' ? 'Project showcase: Tattoo studio website' : 'Muestra de proyecto: Sitio web de estudio de tatuajes'}
-              </p>
+          <div className="relative p-10 rounded-3xl bg-gradient-to-br from-dark-gray/80 to-black border-2 border-electric-blue/30 hover:border-electric-blue transition-all duration-500">
+            <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 to-transparent rounded-3xl" />
+
+            <div className="relative z-10">
+              <div className="flex items-start gap-3 mb-6">
+                <div className="px-3 py-1 rounded-full bg-electric-blue/20 border border-electric-blue/40">
+                  <p className="text-xs font-semibold text-electric-blue uppercase tracking-wider">
+                    {language === 'en' ? 'Featured Client' : 'Cliente Destacado'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-10">
+                <div>
+                  <div className="flex items-center gap-4 mb-6">
+                    <img
+                      src={featuredClient.image}
+                      alt={featuredClient.businessName}
+                      className="w-20 h-20 rounded-full object-cover border-2 border-electric-blue/50"
+                    />
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-1">{featuredClient.businessName}</h3>
+                      <p className="text-gray-400">{featuredClient.owner}, {featuredClient.role}</p>
+                      <p className="text-sm text-electric-blue">{featuredClient.location}</p>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
+                      {language === 'en' ? 'Service Provided' : 'Servicio Proporcionado'}
+                    </p>
+                    <p className="text-white font-medium">{featuredClient.service}</p>
+                  </div>
+
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(featuredClient.rating)].map((_, i) => (
+                      <Star key={i} className="w-6 h-6 text-electric-blue fill-electric-blue" />
+                    ))}
+                  </div>
+
+                  <Quote className="w-10 h-10 text-electric-blue/30 mb-4" />
+                  <p className="text-gray-300 leading-relaxed text-lg mb-6">
+                    {featuredClient.testimonial}
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-800">
+                    {featuredClient.results.map((result, idx) => {
+                      const Icon = result.icon;
+                      return (
+                        <div key={idx} className="text-center">
+                          <Icon className="w-6 h-6 text-electric-blue mx-auto mb-2" />
+                          <p className="text-2xl font-bold text-white mb-1">{result.value}</p>
+                          <p className="text-xs text-gray-400">{result.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-electric-blue/40 hover:border-electric-blue transition-colors duration-500 group w-full">
+                    <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <div className="relative aspect-video bg-black">
+                      <video
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src="/CLiente_Tattoo_prueba_lynx.mp4" type="video/mp4" />
+                      </video>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
+                      <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm px-3 py-2 rounded-full border border-electric-blue/30">
+                        <div className="flex items-center gap-2 text-white">
+                          <Star className="w-4 h-4 text-electric-blue fill-electric-blue" />
+                          <p className="text-xs font-semibold">
+                            {language === 'en' ? 'Client Showcase' : 'Demostración del Cliente'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function TestimonialCard({ testimonial, language }: { testimonial: Testimonial; language: 'en' | 'es' }) {
-  return (
-    <div className="flex-1 p-8 rounded-2xl bg-dark-gray/60 border border-gray-800 hover:border-gray-700 transition-all duration-300">
-      <div className="flex items-start gap-4 mb-6">
-        {testimonial.image ? (
-          <img
-            src={testimonial.image}
-            alt={testimonial.name}
-            className="w-14 h-14 rounded-full object-cover border border-gray-700"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
-            <User className="w-6 h-6 text-gray-500" />
-          </div>
-        )}
-        <div className="flex-1">
-          <h4 className="font-medium text-white text-lg">{testimonial.name}</h4>
-          <p className="text-sm text-gray-400">{testimonial.role}, {testimonial.businessType}</p>
-          <p className="text-xs text-electric-blue/80 mt-1">{testimonial.projectType}</p>
+        <div className="mb-12">
+          <h3 className="text-3xl font-bold text-center mb-3">
+            {language === 'en' ? 'More Client' : 'Más'} <span className="gradient-text">{language === 'en' ? 'Testimonials' : 'Testimonios'}</span>
+          </h3>
+          <p className="text-center text-gray-400 max-w-2xl mx-auto mb-12">
+            {language === 'en'
+              ? 'Trusted by businesses across industries to deliver results that matter'
+              : 'Confiado por empresas de todas las industrias para entregar resultados que importan'}
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {clientReviews.map((review, index) => {
+            const delay = (index + 1) * 150 + 600;
+
+            return (
+              <div
+                key={index}
+                className={`relative group p-8 rounded-2xl bg-gradient-to-br from-dark-gray to-black border border-gray-800 hover:border-electric-blue transition-all duration-700 overflow-hidden hover:scale-105 ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${delay}ms` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 ripple" />
+
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={review.image}
+                        alt={review.name}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-electric-blue/30"
+                      />
+                      <div>
+                        <h4 className="font-bold text-white text-lg">{review.name}</h4>
+                        <p className="text-sm text-electric-blue font-medium">{review.businessName}</p>
+                        <p className="text-xs text-gray-400">{review.role}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 text-electric-blue fill-electric-blue" />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-4 pb-4 border-b border-gray-800">
+                    <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">
+                      {language === 'en' ? 'Service' : 'Servicio'}
+                    </p>
+                    <p className="text-sm text-gray-300 font-medium">{review.service}</p>
+                  </div>
+
+                  <Quote className="w-7 h-7 text-electric-blue/30 mb-3" />
+
+                  <p className="text-gray-300 leading-relaxed">
+                    {review.text}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      <Quote className="w-6 h-6 text-gray-700 mb-3" />
-
-      <p className="text-gray-300 leading-relaxed text-sm">
-        {testimonial.text[language]}
-      </p>
     </div>
   );
 }
