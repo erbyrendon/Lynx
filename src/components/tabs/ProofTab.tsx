@@ -82,7 +82,11 @@ const projects: Project[] = [
       es: 'Desarrollamos un sitio web que muestra el portafolio de los artistas del estudio mientras funciona como una plataforma interactiva de reservas. Los visitantes pueden explorar diseños de tatuajes categorizados por áreas del cuerpo, reservar citas y comprar mercancía directamente.'
     },
     systems: ['Website', 'Portfolio Display', 'Booking System', 'E-commerce'],
-    images: ['https://images.pexels.com/photos/955938/pexels-photo-955938.jpeg?auto=compress&cs=tinysrgb&w=600']
+    images: [
+      '/Captura_de_pantalla_2026-03-17_133459.png',
+      '/Captura_de_pantalla_2026-03-17_133515.png',
+      '/Captura_de_pantalla_2026-03-17_133531.png'
+    ]
   },
   {
     client: 'Dra. Claudia Martinez',
