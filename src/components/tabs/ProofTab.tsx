@@ -14,7 +14,7 @@ interface Project {
     es: string;
   };
   systems: string[];
-  image: string;
+  images: string[];
 }
 
 interface Testimonial {
@@ -43,7 +43,11 @@ const projects: Project[] = [
       es: 'Diseñamos y desarrollamos un sitio web para una compañía de seguros que ayuda a los visitantes a comprender y comparar diferentes planes de seguros. La plataforma incluye una base de datos estructurada, un chatbot integrado que responde preguntas comunes sobre coberturas, y una página de comparación interactiva.'
     },
     systems: ['Website', 'Database', 'Chatbot', 'Comparison Tool'],
-    image: 'https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=600'
+    images: [
+      '/Captura_de_pantalla_2026-03-16_141456.png',
+      '/Captura_de_pantalla_2026-03-16_141536.png',
+      '/Captura_de_pantalla_2026-03-16_141548.png'
+    ]
   },
   {
     client: 'Egresados Royale',
@@ -57,7 +61,7 @@ const projects: Project[] = [
       es: 'Construimos un sitio web para un gran evento de viaje de graduación organizado para estudiantes que viajan a México. La plataforma incluye un itinerario interactivo que describe actividades diarias como eventos en yate, experiencias en discotecas y excursiones organizadas, con seguimiento de ocupación en tiempo real.'
     },
     systems: ['Website', 'Database', 'Itinerary System', 'Occupancy Tracking'],
-    image: 'https://images.pexels.com/photos/1430677/pexels-photo-1430677.jpeg?auto=compress&cs=tinysrgb&w=600'
+    images: ['https://images.pexels.com/photos/1430677/pexels-photo-1430677.jpeg?auto=compress&cs=tinysrgb&w=600']
   },
   {
     client: 'VIP Tattoo Studio',
@@ -71,7 +75,7 @@ const projects: Project[] = [
       es: 'Desarrollamos un sitio web que muestra el portafolio de los artistas del estudio mientras funciona como una plataforma interactiva de reservas. Los visitantes pueden explorar diseños de tatuajes categorizados por áreas del cuerpo, reservar citas y comprar mercancía directamente.'
     },
     systems: ['Website', 'Portfolio Display', 'Booking System', 'E-commerce'],
-    image: 'https://images.pexels.com/photos/955938/pexels-photo-955938.jpeg?auto=compress&cs=tinysrgb&w=600'
+    images: ['https://images.pexels.com/photos/955938/pexels-photo-955938.jpeg?auto=compress&cs=tinysrgb&w=600']
   },
   {
     client: 'Dra. Claudia Martinez',
@@ -85,7 +89,7 @@ const projects: Project[] = [
       es: 'Creamos un sitio web profesional para una cirujana plástica que muestra diferentes procedimientos y servicios médicos. La plataforma incluye explicaciones detalladas de cirugías, un chatbot que responde preguntas comunes de pacientes, funcionalidad de contacto y una base de datos para gestionar solicitudes de citas.'
     },
     systems: ['Website', 'Chatbot', 'Contact Forms', 'Patient Database'],
-    image: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600'
+    images: ['https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600']
   }
 ];
 
@@ -268,6 +272,9 @@ function ProjectCard({
   isVisible: boolean;
   delay: number;
 }) {
+  const [activeImage, setActiveImage] = useState(0);
+  const hasMultipleImages = project.images.length > 1;
+
   return (
     <div
       className={`group rounded-2xl bg-dark-gray/60 border border-gray-800 hover:border-gray-700 transition-all duration-500 overflow-hidden ${
@@ -275,12 +282,32 @@ function ProjectCard({
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="aspect-[16/9] overflow-hidden">
+      <div className="relative aspect-[16/9] overflow-hidden">
         <img
-          src={project.image}
+          src={project.images[activeImage]}
           alt={project.client}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        {hasMultipleImages && (
+          <>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {project.images.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImage(idx)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    idx === activeImage
+                      ? 'bg-electric-blue w-6'
+                      : 'bg-white/40 hover:bg-white/60'
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 text-xs text-white/80">
+              {activeImage + 1} / {project.images.length}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="p-6">
