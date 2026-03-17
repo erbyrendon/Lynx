@@ -61,7 +61,14 @@ const projects: Project[] = [
       es: 'Construimos un sitio web para un gran evento de viaje de graduación organizado para estudiantes que viajan a México. La plataforma incluye un itinerario interactivo que describe actividades diarias como eventos en yate, experiencias en discotecas y excursiones organizadas, con seguimiento de ocupación en tiempo real.'
     },
     systems: ['Website', 'Database', 'Itinerary System', 'Occupancy Tracking'],
-    images: ['https://images.pexels.com/photos/1430677/pexels-photo-1430677.jpeg?auto=compress&cs=tinysrgb&w=600']
+    images: [
+      '/Captura_de_pantalla_2026-03-17_133149.png',
+      '/Captura_de_pantalla_2026-03-17_133204.png',
+      '/Captura_de_pantalla_2026-03-17_133231.png',
+      '/Captura_de_pantalla_2026-03-17_133256.png',
+      '/Captura_de_pantalla_2026-03-17_133306.png',
+      '/Captura_de_pantalla_2026-03-17_133322.png'
+    ]
   },
   {
     client: 'VIP Tattoo Studio',
@@ -273,7 +280,16 @@ function ProjectCard({
   delay: number;
 }) {
   const [activeImage, setActiveImage] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const hasMultipleImages = project.images.length > 1;
+
+  useEffect(() => {
+    if (!hasMultipleImages || isPaused) return;
+    const interval = setInterval(() => {
+      setActiveImage((prev) => (prev + 1) % project.images.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [hasMultipleImages, isPaused, project.images.length]);
 
   return (
     <div
@@ -282,7 +298,11 @@ function ProjectCard({
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="relative aspect-[16/9] overflow-hidden">
+      <div
+        className="relative aspect-[16/9] overflow-hidden"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         <img
           src={project.images[activeImage]}
           alt={project.client}
