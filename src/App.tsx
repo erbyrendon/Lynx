@@ -2,6 +2,7 @@ import { useState } from 'react';
 import TabbedLanding from './components/TabbedLanding';
 import AdminPanel from './components/admin/AdminPanel';
 import CustomCursor from './components/CustomCursor';
+import Chatbot from './components/Chatbot';
 import { Key, Languages } from 'lucide-react';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -35,6 +36,8 @@ function App() {
       </div>
 
       {showAdmin ? <AdminPanel /> : <TabbedLanding />}
+
+      <Chatbot />
     </div>
   );
 }
