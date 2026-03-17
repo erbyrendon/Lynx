@@ -100,7 +100,11 @@ const projects: Project[] = [
       es: 'Creamos un sitio web profesional para una cirujana plástica que muestra diferentes procedimientos y servicios médicos. La plataforma incluye explicaciones detalladas de cirugías, un chatbot que responde preguntas comunes de pacientes, funcionalidad de contacto y una base de datos para gestionar solicitudes de citas.'
     },
     systems: ['Website', 'Chatbot', 'Contact Forms', 'Patient Database'],
-    images: ['https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600']
+    images: [
+      '/Captura_de_pantalla_2026-03-17_133636.png',
+      '/Captura_de_pantalla_2026-03-17_133700.png',
+      '/Captura_de_pantalla_2026-03-17_133746.png'
+    ]
   }
 ];
 
