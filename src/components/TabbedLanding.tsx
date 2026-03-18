@@ -9,12 +9,15 @@ import ServicesTab from './tabs/ServicesTab';
 import ValuesTab from './tabs/ValuesTab';
 import ProofTab from './tabs/ProofTab';
 import ContactTab from './tabs/ContactTab';
+import IndustrySolutionsTab from './tabs/IndustrySolutionsTab';
+import IndustryDetailTab from './tabs/IndustryDetailTab';
 
 export default function TabbedLanding() {
   const { language, t } = useLanguage();
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeTab, setActiveTab] = useState('home');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
 
   useEffect(() => {
     loadTabs();
@@ -40,7 +43,24 @@ export default function TabbedLanding() {
     }
   };
 
+  const handleNavigateToIndustry = (slug: string) => {
+    setSelectedIndustry(slug);
+  };
+
+  const handleBackToSolutions = () => {
+    setSelectedIndustry(null);
+  };
+
   const getTabContent = (slug: string) => {
+    if (slug === 'solutions' && selectedIndustry) {
+      return (
+        <IndustryDetailTab
+          slug={selectedIndustry}
+          onBack={handleBackToSolutions}
+        />
+      );
+    }
+
     switch (slug) {
       case 'home':
         return <HomeTab />;
@@ -56,6 +76,8 @@ export default function TabbedLanding() {
         return <ProofTab />;
       case 'impact':
         return <ProofTab />;
+      case 'solutions':
+        return <IndustrySolutionsTab onNavigateToIndustry={handleNavigateToIndustry} />;
       case 'contact':
         return <ContactTab />;
       default:
