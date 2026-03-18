@@ -11,6 +11,7 @@ import ProofTab from './tabs/ProofTab';
 import ContactTab from './tabs/ContactTab';
 import IndustrySolutionsTab from './tabs/IndustrySolutionsTab';
 import IndustryDetailTab from './tabs/IndustryDetailTab';
+import TattooStudiosPage from './industries/TattooStudiosPage';
 
 export default function TabbedLanding() {
   const { language, t } = useLanguage();
@@ -53,6 +54,9 @@ export default function TabbedLanding() {
 
   const getTabContent = (slug: string) => {
     if (slug === 'solutions' && selectedIndustry) {
+      if (selectedIndustry === 'tattoo-studios') {
+        return <TattooStudiosPage onBack={handleBackToSolutions} />;
+      }
       return (
         <IndustryDetailTab
           slug={selectedIndustry}
