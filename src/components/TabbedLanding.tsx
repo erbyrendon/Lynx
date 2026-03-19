@@ -11,6 +11,7 @@ import ProofTab from './tabs/ProofTab';
 import ContactTab from './tabs/ContactTab';
 import IndustrySolutionsTab from './tabs/IndustrySolutionsTab';
 import IndustryDetailTab from './tabs/IndustryDetailTab';
+import SpecializedSolutionsTab from './tabs/SpecializedSolutionsTab';
 import TattooStudiosPage from './industries/TattooStudiosPage';
 
 export default function TabbedLanding() {
@@ -82,6 +83,8 @@ export default function TabbedLanding() {
         return <ProofTab />;
       case 'solutions':
         return <IndustrySolutionsTab onNavigateToIndustry={handleNavigateToIndustry} />;
+      case 'specialized':
+        return <SpecializedSolutionsTab />;
       case 'contact':
         return <ContactTab />;
       default:
