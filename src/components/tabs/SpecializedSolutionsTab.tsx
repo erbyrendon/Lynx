@@ -1,4 +1,5 @@
-import { ArrowRight, ChevronDown, Globe, Users, Calendar, BarChart3, MapPin, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, ChevronDown, Globe, Users, Calendar, BarChart3, MapPin, Clock, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SpecializedProject {
@@ -10,8 +11,36 @@ interface SpecializedProject {
   icon: React.ReactNode;
 }
 
+const egresadosScreenshots = [
+  '/Captura_de_pantalla_2026-03-17_133149.png',
+  '/Captura_de_pantalla_2026-03-17_133204.png',
+  '/Captura_de_pantalla_2026-03-17_133231.png',
+  '/Captura_de_pantalla_2026-03-17_133256.png',
+  '/Captura_de_pantalla_2026-03-17_133306.png',
+  '/Captura_de_pantalla_2026-03-17_133322.png',
+];
+
 export default function SpecializedSolutionsTab() {
   const { language } = useLanguage();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openLightbox = (index: number) => {
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % egresadosScreenshots.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + egresadosScreenshots.length) % egresadosScreenshots.length);
+  };
 
   const content = {
     en: {
@@ -186,6 +215,33 @@ export default function SpecializedSolutionsTab() {
                       ))}
                     </div>
 
+                    {project.id === 'egresados-royale' && (
+                      <div className="mb-8">
+                        <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">
+                          {language === 'es' ? 'Capturas de Pantalla' : 'Platform Screenshots'}
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {egresadosScreenshots.map((screenshot, imgIndex) => (
+                            <button
+                              key={imgIndex}
+                              onClick={() => openLightbox(imgIndex)}
+                              className="group/img relative aspect-video bg-gray-900 border border-gray-800 rounded-sm overflow-hidden hover:border-emerald-700/50 transition-all duration-300"
+                            >
+                              <img
+                                src={screenshot}
+                                alt={`Egresados Royale screenshot ${imgIndex + 1}`}
+                                className="w-full h-full object-cover opacity-80 group-hover/img:opacity-100 group-hover/img:scale-105 transition-all duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
+                              <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity duration-300">
+                                <ArrowRight className="w-3 h-3 text-white rotate-[-45deg]" />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <button className="group/btn inline-flex items-center gap-2 text-white hover:text-emerald-400 transition-colors duration-300">
                       <span className="text-sm font-medium">{t.viewProject}</span>
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
@@ -230,6 +286,59 @@ export default function SpecializedSolutionsTab() {
           </div>
         </div>
       </section>
+
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <button
+            onClick={closeLightbox}
+            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-300"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            className="absolute left-4 md:left-8 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-300"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          <div
+            className="max-w-6xl max-h-[85vh] px-16"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={egresadosScreenshots[currentImageIndex]}
+              alt={`Egresados Royale screenshot ${currentImageIndex + 1}`}
+              className="max-w-full max-h-[85vh] object-contain rounded-sm border border-gray-800"
+            />
+          </div>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            className="absolute right-4 md:right-8 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-300"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {egresadosScreenshots.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  idx === currentImageIndex
+                    ? 'bg-emerald-500 w-6'
+                    : 'bg-white/30 hover:bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
