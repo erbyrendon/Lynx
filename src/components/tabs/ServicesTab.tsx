@@ -12,8 +12,13 @@ export default function ServicesTab() {
   const [isEntering, setIsEntering] = useState(false);
 
   useEffect(() => {
-    setIsEntering(true);
-  }, []);
+    if (!isLoading) {
+      const frameId = requestAnimationFrame(() => setIsEntering(true));
+      return () => cancelAnimationFrame(frameId);
+    }
+
+    setIsEntering(false);
+  }, [isLoading]);
 
   const loadDisciplines = useCallback(async () => {
     try {
@@ -45,8 +50,16 @@ export default function ServicesTab() {
 
   if (isLoading) {
     return (
-      <div className="p-12 text-center">
-        <div className="text-electric-blue animate-pulse">{t('loadingServices')}</div>
+      <div className="p-12">
+        <div className="max-w-6xl mx-auto animate-pulse space-y-8">
+          <div className="h-10 w-72 mx-auto rounded bg-gray-800" />
+          <div className="h-5 w-96 max-w-full mx-auto rounded bg-gray-900" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="h-64 rounded-xl border border-gray-800 bg-gray-900/50" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

@@ -13,8 +13,13 @@ export default function ImpactTab() {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    setIsEntering(true);
-  }, []);
+    if (!isLoading) {
+      const frameId = requestAnimationFrame(() => setIsEntering(true));
+      return () => cancelAnimationFrame(frameId);
+    }
+
+    setIsEntering(false);
+  }, [isLoading]);
 
   const loadMetrics = useCallback(async () => {
     try {
@@ -98,8 +103,21 @@ export default function ImpactTab() {
 
   if (isLoading) {
     return (
-      <div className="p-12 text-center">
-        <div className="text-electric-blue animate-pulse">{t('loadingMetrics')}</div>
+      <div className="p-12">
+        <div className="max-w-6xl mx-auto animate-pulse space-y-8">
+          <div className="h-10 w-72 mx-auto rounded bg-gray-800" />
+          <div className="h-5 w-[32rem] max-w-full mx-auto rounded bg-gray-900" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="h-72 rounded-2xl border border-gray-800 bg-gray-900/50" />
+            ))}
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {[...Array(2)].map((_, index) => (
+              <div key={index} className="h-96 rounded-2xl border border-gray-800 bg-gray-900/40" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

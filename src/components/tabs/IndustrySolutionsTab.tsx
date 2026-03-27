@@ -25,8 +25,13 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
   const [isEntering, setIsEntering] = useState(false);
 
   useEffect(() => {
-    setIsEntering(true);
-  }, []);
+    if (!isLoading) {
+      const frameId = requestAnimationFrame(() => setIsEntering(true));
+      return () => cancelAnimationFrame(frameId);
+    }
+
+    setIsEntering(false);
+  }, [isLoading]);
 
   const content = {
     en: {
@@ -106,7 +111,17 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
   if (isLoading) {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
-        <div className="text-gray-400 animate-pulse">Loading...</div>
+        <div className="w-full p-12">
+          <div className="max-w-6xl mx-auto animate-pulse space-y-8">
+            <div className="h-12 w-[34rem] max-w-full mx-auto rounded bg-gray-800" />
+            <div className="h-5 w-[30rem] max-w-full mx-auto rounded bg-gray-900" />
+            <div className="grid md:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="h-72 rounded-sm border border-gray-800 bg-gray-900/50" />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
