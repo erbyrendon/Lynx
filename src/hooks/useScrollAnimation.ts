@@ -11,6 +11,7 @@ export function useScrollAnimation(options: ScrollAnimationOptions = {}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const observedElement = ref.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -20,13 +21,13 @@ export function useScrollAnimation(options: ScrollAnimationOptions = {}) {
       { threshold, rootMargin }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    if (observedElement) {
+      observer.observe(observedElement);
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (observedElement) {
+        observer.unobserve(observedElement);
       }
     };
   }, [threshold, rootMargin]);

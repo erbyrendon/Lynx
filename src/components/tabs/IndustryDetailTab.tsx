@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
-import * as Icons from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLucideIconByName } from '../../lib/icons';
 
 interface IndustrySolution {
   id: string;
@@ -57,11 +57,7 @@ export default function IndustryDetailTab({ slug, onBack }: IndustryDetailTabPro
 
   const t = content[language as keyof typeof content] || content.en;
 
-  useEffect(() => {
-    loadIndustry();
-  }, [slug, language]);
-
-  const loadIndustry = async () => {
+  const loadIndustry = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('industry_solutions')
@@ -83,11 +79,15 @@ export default function IndustryDetailTab({ slug, onBack }: IndustryDetailTabPro
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [slug, language]);
+
+  useEffect(() => {
+    loadIndustry();
+  }, [loadIndustry]);
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>>)[iconName];
-    return Icon ? <Icon className="w-10 h-10" strokeWidth={1.5} /> : null;
+    const Icon = getLucideIconByName(iconName);
+    return <Icon className="w-10 h-10" strokeWidth={1.5} />;
   };
 
   const scrollToContact = () => {

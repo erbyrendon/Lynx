@@ -13,6 +13,7 @@ export default function Essence() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const sectionEl = sectionRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -22,13 +23,13 @@ export default function Essence() {
       { threshold: 0.1 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (sectionEl) {
+      observer.observe(sectionEl);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (sectionEl) {
+        observer.unobserve(sectionEl);
       }
     };
   }, []);

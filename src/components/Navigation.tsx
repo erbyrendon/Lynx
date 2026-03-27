@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Eye, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);

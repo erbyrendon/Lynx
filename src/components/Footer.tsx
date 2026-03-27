@@ -1,4 +1,4 @@
-import { Eye, Mail, Linkedin, Twitter } from 'lucide-react';
+import { Mail, Linkedin, Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (

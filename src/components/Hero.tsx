@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Eye, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import WordReveal from './WordReveal';
 
 export default function Hero() {

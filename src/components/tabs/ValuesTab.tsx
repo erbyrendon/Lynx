@@ -1,18 +1,14 @@
-import { useState, useEffect } from 'react';
-import * as Icons from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, type Value } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
 import Tooltip from '../Tooltip';
+import { getLucideIconByName } from '../../lib/icons';
 
 export default function ValuesTab() {
   const { language, t } = useLanguage();
   const [values, setValues] = useState<Value[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadValues();
-  }, [language]);
 
   useEffect(() => {
     if (values.length === 0) return;
@@ -24,7 +20,7 @@ export default function ValuesTab() {
     return () => clearInterval(timer);
   }, [values]);
 
-  const loadValues = async () => {
+  const loadValues = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('values')
@@ -42,11 +38,14 @@ export default function ValuesTab() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    loadValues();
+  }, [loadValues]);
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as any)[iconName];
-    return Icon ? Icon : Icons.Eye;
+    return getLucideIconByName(iconName);
   };
 
   if (isLoading) {

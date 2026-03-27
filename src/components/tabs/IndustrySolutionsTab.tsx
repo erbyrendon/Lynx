@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
-import * as Icons from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLucideIconByName } from '../../lib/icons';
 
 interface IndustrySolution {
   id: string;
@@ -48,11 +48,7 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
 
   const t = content[language as keyof typeof content] || content.en;
 
-  useEffect(() => {
-    loadIndustries();
-  }, [language]);
-
-  const loadIndustries = async () => {
+  const loadIndustries = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('industry_solutions')
@@ -74,11 +70,15 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    loadIndustries();
+  }, [loadIndustries]);
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>>)[iconName];
-    return Icon ? <Icon className="w-8 h-8" strokeWidth={1.5} /> : null;
+    const Icon = getLucideIconByName(iconName);
+    return <Icon className="w-8 h-8" strokeWidth={1.5} />;
   };
 
   const scrollToIndustries = () => {

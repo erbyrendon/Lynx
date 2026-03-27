@@ -31,6 +31,7 @@ export default function Proof() {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
+    const sectionEl = sectionRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
@@ -41,13 +42,13 @@ export default function Proof() {
       { threshold: 0.3 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (sectionEl) {
+      observer.observe(sectionEl);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (sectionEl) {
+        observer.unobserve(sectionEl);
       }
     };
   }, []);

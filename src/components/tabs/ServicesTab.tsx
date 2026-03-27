@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
-import * as Icons from 'lucide-react';
 import { supabase, type Discipline } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLucideIconByName } from '../../lib/icons';
 
 export default function ServicesTab() {
   const { language, t } = useLanguage();
@@ -10,11 +10,7 @@ export default function ServicesTab() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadDisciplines();
-  }, [language]);
-
-  const loadDisciplines = async () => {
+  const loadDisciplines = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('disciplines')
@@ -32,11 +28,14 @@ export default function ServicesTab() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    loadDisciplines();
+  }, [loadDisciplines]);
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as any)[iconName];
-    return Icon ? Icon : Icons.Target;
+    return getLucideIconByName(iconName);
   };
 
   if (isLoading) {

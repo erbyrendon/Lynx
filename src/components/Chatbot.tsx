@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -126,7 +126,7 @@ export default function Chatbot() {
     }
   }, [isOpen]);
 
-  const loadOrCreateConversation = async () => {
+  const loadOrCreateConversation = useCallback(async () => {
     const sessionId = getSessionId();
 
     const { data: existingConversation } = await supabase
@@ -183,13 +183,13 @@ export default function Chatbot() {
         setMessages([greetingMessage]);
       }
     }
-  };
+  }, [language]);
 
   useEffect(() => {
     if (isOpen && !conversation) {
       loadOrCreateConversation();
     }
-  }, [isOpen]);
+  }, [isOpen, conversation, loadOrCreateConversation]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !conversation || isLoading) return;

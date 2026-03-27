@@ -2,15 +2,6 @@ import { useState } from 'react';
 import { ArrowRight, ChevronDown, Globe, Users, Calendar, BarChart3, MapPin, Clock, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-interface SpecializedProject {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  features: string[];
-  icon: React.ReactNode;
-}
-
 const egresadosScreenshots = [
   '/Captura_de_pantalla_2026-03-17_133149.png',
   '/Captura_de_pantalla_2026-03-17_133204.png',
@@ -169,7 +160,7 @@ export default function SpecializedSolutionsTab() {
 
       <section id="projects-grid" className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
-          {t.projects.map((project, index) => (
+          {t.projects.map((project) => (
             <div
               key={project.id}
               className="group relative bg-gray-950 border border-gray-800 rounded-sm overflow-hidden hover:border-gray-600 transition-all duration-500"

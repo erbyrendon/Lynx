@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import { supabase, type Tab } from '../lib/supabase';
-import * as Icons from 'lucide-react';
+import { getLucideIconByName } from '../lib/icons';
 import { useLanguage } from '../contexts/LanguageContext';
-import HomeTab from './tabs/HomeTab';
-import AboutTab from './tabs/AboutTab';
-import StoryTab from './tabs/StoryTab';
-import ServicesTab from './tabs/ServicesTab';
-import ValuesTab from './tabs/ValuesTab';
-import ProofTab from './tabs/ProofTab';
-import ImpactTab from './tabs/ImpactTab';
-import ContactTab from './tabs/ContactTab';
-import IndustrySolutionsTab from './tabs/IndustrySolutionsTab';
-import IndustryDetailTab from './tabs/IndustryDetailTab';
-import SpecializedSolutionsTab from './tabs/SpecializedSolutionsTab';
-import TattooStudiosPage from './industries/TattooStudiosPage';
+
+const HomeTab = lazy(() => import('./tabs/HomeTab'));
+const AboutTab = lazy(() => import('./tabs/AboutTab'));
+const StoryTab = lazy(() => import('./tabs/StoryTab'));
+const ServicesTab = lazy(() => import('./tabs/ServicesTab'));
+const ValuesTab = lazy(() => import('./tabs/ValuesTab'));
+const ProofTab = lazy(() => import('./tabs/ProofTab'));
+const ImpactTab = lazy(() => import('./tabs/ImpactTab'));
+const ContactTab = lazy(() => import('./tabs/ContactTab'));
+const IndustrySolutionsTab = lazy(() => import('./tabs/IndustrySolutionsTab'));
+const IndustryDetailTab = lazy(() => import('./tabs/IndustryDetailTab'));
+const SpecializedSolutionsTab = lazy(() => import('./tabs/SpecializedSolutionsTab'));
+const TattooStudiosPage = lazy(() => import('./industries/TattooStudiosPage'));
 
 export default function TabbedLanding() {
   const { language, t } = useLanguage();
@@ -22,11 +23,7 @@ export default function TabbedLanding() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadTabs();
-  }, [language]);
-
-  const loadTabs = async () => {
+  const loadTabs = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('tabs')
@@ -44,7 +41,11 @@ export default function TabbedLanding() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    loadTabs();
+  }, [loadTabs]);
 
   const handleNavigateToIndustry = (slug: string) => {
     setSelectedIndustry(slug);
@@ -94,8 +95,8 @@ export default function TabbedLanding() {
   };
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as any)[iconName];
-    return Icon ? <Icon className="w-5 h-5" strokeWidth={1.5} /> : null;
+    const Icon = getLucideIconByName(iconName);
+    return <Icon className="w-5 h-5" strokeWidth={1.5} />;
   };
 
   if (isLoading) {
@@ -149,7 +150,17 @@ export default function TabbedLanding() {
                     : 'opacity-0 absolute inset-0 pointer-events-none'
                 }`}
               >
-                {activeTab === tab.slug && getTabContent(tab.slug)}
+                {activeTab === tab.slug && (
+                  <Suspense
+                    fallback={(
+                      <div className="min-h-[600px] flex items-center justify-center text-electric-blue animate-pulse">
+                        {t('loading')}
+                      </div>
+                    )}
+                  >
+                    {getTabContent(tab.slug)}
+                  </Suspense>
+                )}
               </div>
             ))}
           </div>

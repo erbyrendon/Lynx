@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import * as Icons from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase, type Metric, type CaseStudy } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getLucideIconByName } from '../../lib/icons';
 
 export default function ImpactTab() {
   const { language, t } = useLanguage();
@@ -11,20 +11,7 @@ export default function ImpactTab() {
   const [isLoading, setIsLoading] = useState(true);
   const hasAnimated = useRef(false);
 
-  useEffect(() => {
-    hasAnimated.current = false;
-    loadMetrics();
-    loadCaseStudies();
-  }, [language]);
-
-  useEffect(() => {
-    if (metrics.length > 0 && !hasAnimated.current) {
-      hasAnimated.current = true;
-      animateCounters();
-    }
-  }, [metrics]);
-
-  const loadMetrics = async () => {
+  const loadMetrics = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('metrics')
@@ -43,9 +30,9 @@ export default function ImpactTab() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [language]);
 
-  const loadCaseStudies = async () => {
+  const loadCaseStudies = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('case_studies')
@@ -61,9 +48,9 @@ export default function ImpactTab() {
     } catch (error) {
       console.error('Error loading case studies:', error);
     }
-  };
+  }, [language]);
 
-  const animateCounters = () => {
+  const animateCounters = useCallback(() => {
     const duration = 2000;
     const steps = 60;
     const stepDuration = duration / steps;
@@ -85,11 +72,23 @@ export default function ImpactTab() {
         }
       }, stepDuration);
     });
-  };
+  }, [metrics]);
+
+  useEffect(() => {
+    hasAnimated.current = false;
+    loadMetrics();
+    loadCaseStudies();
+  }, [language, loadMetrics, loadCaseStudies]);
+
+  useEffect(() => {
+    if (metrics.length > 0 && !hasAnimated.current) {
+      hasAnimated.current = true;
+      animateCounters();
+    }
+  }, [metrics, animateCounters]);
 
   const getIcon = (iconName: string) => {
-    const Icon = (Icons as any)[iconName];
-    return Icon ? Icon : Icons.TrendingUp;
+    return getLucideIconByName(iconName);
   };
 
   if (isLoading) {

@@ -13,7 +13,25 @@ export default defineConfig({
     minify: 'terser',
     rollupOptions: {
       output: {
-        manualChunks: {},
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+
+          if (id.includes('node_modules/@supabase/supabase-js')) {
+            return 'supabase-vendor';
+          }
+
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons-vendor';
+          }
+
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+
+          return undefined;
+        },
       },
     },
   },
