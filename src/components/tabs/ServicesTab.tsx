@@ -9,6 +9,11 @@ export default function ServicesTab() {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEntering, setIsEntering] = useState(false);
+
+  useEffect(() => {
+    setIsEntering(true);
+  }, []);
 
   const loadDisciplines = useCallback(async () => {
     try {
@@ -47,7 +52,11 @@ export default function ServicesTab() {
   }
 
   return (
-    <div className="p-12">
+    <div
+      className={`p-12 transition-all duration-500 ${
+        isEntering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+      }`}
+    >
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">

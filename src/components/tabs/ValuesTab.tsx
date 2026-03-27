@@ -9,6 +9,11 @@ export default function ValuesTab() {
   const [values, setValues] = useState<Value[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEntering, setIsEntering] = useState(false);
+
+  useEffect(() => {
+    setIsEntering(true);
+  }, []);
 
   useEffect(() => {
     if (values.length === 0) return;
@@ -57,7 +62,11 @@ export default function ValuesTab() {
   }
 
   return (
-    <div className="p-12">
+    <div
+      className={`p-12 transition-all duration-500 ${
+        isEntering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+      }`}
+    >
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">

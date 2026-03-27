@@ -22,6 +22,11 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
   const { language } = useLanguage();
   const [industries, setIndustries] = useState<IndustrySolution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEntering, setIsEntering] = useState(false);
+
+  useEffect(() => {
+    setIsEntering(true);
+  }, []);
 
   const content = {
     en: {
@@ -107,7 +112,11 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
   }
 
   return (
-    <div className="bg-black">
+    <div
+      className={`bg-black transition-all duration-500 ${
+        isEntering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+      }`}
+    >
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
