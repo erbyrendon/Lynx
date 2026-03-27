@@ -8,6 +8,7 @@ import StoryTab from './tabs/StoryTab';
 import ServicesTab from './tabs/ServicesTab';
 import ValuesTab from './tabs/ValuesTab';
 import ProofTab from './tabs/ProofTab';
+import ImpactTab from './tabs/ImpactTab';
 import ContactTab from './tabs/ContactTab';
 import IndustrySolutionsTab from './tabs/IndustrySolutionsTab';
 import IndustryDetailTab from './tabs/IndustryDetailTab';
@@ -80,7 +81,7 @@ export default function TabbedLanding() {
       case 'proof':
         return <ProofTab />;
       case 'impact':
-        return <ProofTab />;
+        return <ImpactTab />;
       case 'solutions':
         return <IndustrySolutionsTab onNavigateToIndustry={handleNavigateToIndustry} />;
       case 'specialized':
