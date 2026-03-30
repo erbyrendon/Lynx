@@ -156,6 +156,72 @@ app.post('/api/contact', async (req, res) => {
     }
 
     if (AUTO_REPLY_ENABLED) {
+      const autoReplyHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #f9fafb; padding: 20px; }
+            .email-wrapper { background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+            .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: #ffffff; padding: 40px 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+            .header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
+            .content { padding: 40px 30px; }
+            .greeting { font-size: 16px; margin-bottom: 20px; }
+            .message-box { background-color: #f3f4f6; border-left: 4px solid #1a1a1a; padding: 15px 20px; margin: 25px 0; border-radius: 4px; }
+            .message-box p { margin: 0; font-size: 14px; color: #555; line-height: 1.5; }
+            .cta-section { margin: 30px 0; padding: 20px; background-color: #f9fafb; border-radius: 6px; text-align: center; }
+            .cta-button { display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; }
+            .footer { background-color: #f3f4f6; padding: 25px 30px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; }
+            .footer p { margin: 8px 0; }
+            .divider { height: 1px; background-color: #e5e7eb; margin: 20px 0; }
+            .highlight { color: #1a1a1a; font-weight: 600; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="email-wrapper">
+              <div class="header">
+                <h1>✓ Recibimos tu mensaje</h1>
+                <p>Tu solicitud está en nuestras manos</p>
+              </div>
+              
+              <div class="content">
+                <p class="greeting">Hola <span class="highlight">${normalized.name}</span>,</p>
+                
+                <p>Gracias por contactarnos. Hemos recibido tu solicitud y la hemos registrado correctamente.</p>
+                
+                <div class="message-box">
+                  <p><strong>Detalles de tu solicitud:</strong></p>
+                  <p><strong>Empresa/Negocio:</strong> ${normalized.business}</p>
+                  <p><strong>Tu mensaje:</strong></p>
+                  <p>${normalized.message.replace(/\n/g, '<br>')}</p>
+                </div>
+                
+                <p>Nuestro equipo revisará tu solicitud con atención y <strong>nos pondremos en contacto dentro de las próximas 24 horas</strong> para discutir cómo podemos ayudarte a potenciar tu negocio.</p>
+                
+                <div class="cta-section">
+                  <p style="margin: 0; font-size: 14px;">¿Preguntas antes de que te contactemos?</p>
+                  <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">Responde a este email directamente</p>
+                </div>
+                
+                <p style="margin-top: 30px; font-size: 14px;">En LYNX, entendemos que cada negocio es único. Tu éxito es nuestro éxito.</p>
+              </div>
+              
+              <div class="footer">
+                <p>Equipo LYNX</p>
+                <p>www.lynxtheeye.com</p>
+                <p style="color: #999; margin-top: 15px;">Este es un email automatizado. Por favor no respondas a este mensaje. Utiliza nuestra página de contacto para comunicarte con nosotros.</p>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
       await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -166,13 +232,7 @@ app.post('/api/contact', async (req, res) => {
           from: CONTACT_FROM_EMAIL,
           to: [normalized.email],
           subject: AUTO_REPLY_SUBJECT,
-          html: `
-            <p>Hola ${normalized.name},</p>
-            <p>Gracias por contactarnos. Recibimos tu solicitud y te responderemos pronto.</p>
-            <p><strong>Resumen:</strong></p>
-            <p>${normalized.message.replace(/\n/g, '<br>')}</p>
-            <p>Equipo LYNX</p>
-          `,
+          html: autoReplyHtml,
         }),
       });
     }
