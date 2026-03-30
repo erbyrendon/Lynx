@@ -12,6 +12,7 @@ const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL;
 const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL;
 const AUTO_REPLY_ENABLED = (process.env.CONTACT_AUTO_REPLY || '1') === '1';
 const AUTO_REPLY_SUBJECT = process.env.CONTACT_AUTO_REPLY_SUBJECT || 'Recibimos tu mensaje - LYNX';
+const GOOGLE_SHEETS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_REQUESTS = 10;
@@ -153,6 +154,24 @@ app.post('/api/contact', async (req, res) => {
         message: providerMessage,
       });
       return;
+    }
+
+    // Save lead to Google Sheets if webhook URL is configured
+    if (GOOGLE_SHEETS_WEBHOOK_URL) {
+      fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: normalized.name,
+          email: normalized.email,
+          business: normalized.business,
+          message: normalized.message,
+          source: 'web-contact',
+          status: 'new',
+        }),
+      }).catch(err => {
+        console.error('Google Sheets webhook error:', err.message);
+      });
     }
 
     if (AUTO_REPLY_ENABLED) {
