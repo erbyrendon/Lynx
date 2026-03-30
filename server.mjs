@@ -132,8 +132,26 @@ app.post('/api/contact', async (req, res) => {
 
     if (!sendInternal.ok) {
       const errorText = await sendInternal.text();
-      console.error('Resend internal email failed:', errorText);
-      res.status(502).json({ ok: false, message: 'Unable to send message right now.' });
+      let providerMessage = 'Unable to send message right now.';
+
+      try {
+        const parsed = JSON.parse(errorText);
+        if (parsed?.message && typeof parsed.message === 'string') {
+          providerMessage = parsed.message;
+        }
+      } catch {
+        // Keep generic provider message when body is not JSON.
+      }
+
+      console.error('Resend internal email failed:', {
+        status: sendInternal.status,
+        body: errorText,
+      });
+
+      res.status(502).json({
+        ok: false,
+        message: providerMessage,
+      });
       return;
     }
 
