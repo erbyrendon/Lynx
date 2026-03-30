@@ -2,6 +2,8 @@ import { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import { supabase, type Tab } from '../lib/supabase';
 import { getLucideIconByName } from '../lib/icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { getLocalTabs } from '../lib/localContent';
 
 const HomeTab = lazy(() => import('./tabs/HomeTab'));
 const AboutTab = lazy(() => import('./tabs/AboutTab'));
@@ -24,6 +26,12 @@ export default function TabbedLanding() {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
 
   const loadTabs = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setTabs(getLocalTabs(language));
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('tabs')
@@ -38,6 +46,7 @@ export default function TabbedLanding() {
       }
     } catch (error) {
       console.error('Error loading tabs:', error);
+      setTabs(getLocalTabs(language));
     } finally {
       setIsLoading(false);
     }

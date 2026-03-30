@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import { Send } from 'lucide-react';
-import { supabase, type ContactSubmission } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
+
+interface ContactFormData {
+  name: string;
+  email: string;
+  business: string;
+  message: string;
+  website: string;
+}
 
 export default function ContactTab() {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState<ContactSubmission>({
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     business: '',
     message: '',
+    website: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,20 +28,21 @@ export default function ContactTab() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert([
-          {
-            ...formData,
-            status: 'new',
-          },
-        ]);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to submit contact form');
+      }
 
       setSubmitStatus('success');
       setTimeout(() => {
-        setFormData({ name: '', email: '', business: '', message: '' });
+        setFormData({ name: '', email: '', business: '', message: '', website: '' });
         setSubmitStatus('idle');
       }, 3000);
     } catch (error) {
@@ -67,7 +76,11 @@ export default function ContactTab() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
+              <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-gray-300">
+                {t('yourName')}
+              </label>
               <input
+                id="contact-name"
                 type="text"
                 name="name"
                 value={formData.name}
@@ -78,7 +91,11 @@ export default function ContactTab() {
               />
             </div>
             <div>
+              <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-gray-300">
+                {t('emailAddress')}
+              </label>
               <input
+                id="contact-email"
                 type="email"
                 name="email"
                 value={formData.email}
@@ -92,7 +109,11 @@ export default function ContactTab() {
           </div>
 
           <div>
+            <label htmlFor="contact-business" className="mb-2 block text-sm font-medium text-gray-300">
+              {t('businessName')}
+            </label>
             <input
+              id="contact-business"
               type="text"
               name="business"
               value={formData.business}
@@ -104,8 +125,23 @@ export default function ContactTab() {
             />
           </div>
 
+          <div className="hidden" aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={formData.website}
+              onChange={handleChange}
+            />
+          </div>
+
           <div>
+            <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-gray-300">
+              {t('automationNeeds')}
+            </label>
             <textarea
+              id="contact-message"
               name="message"
               value={formData.message}
               onChange={handleChange}

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase, type Metric, type CaseStudy } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLucideIconByName } from '../../lib/icons';
+import { isSupabaseConfigured } from '../../lib/supabase';
+import { getLocalCaseStudies, getLocalMetrics } from '../../lib/localContent';
 
 export default function ImpactTab() {
   const { language, t } = useLanguage();
@@ -22,6 +24,14 @@ export default function ImpactTab() {
   }, [isLoading]);
 
   const loadMetrics = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      const localMetrics = getLocalMetrics(language);
+      setMetrics(localMetrics);
+      setCounters(new Array(localMetrics.length).fill(0));
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('metrics')
@@ -37,12 +47,20 @@ export default function ImpactTab() {
       }
     } catch (error) {
       console.error('Error loading metrics:', error);
+      const localMetrics = getLocalMetrics(language);
+      setMetrics(localMetrics);
+      setCounters(new Array(localMetrics.length).fill(0));
     } finally {
       setIsLoading(false);
     }
   }, [language]);
 
   const loadCaseStudies = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setCaseStudies(getLocalCaseStudies(language));
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('case_studies')
@@ -57,6 +75,7 @@ export default function ImpactTab() {
       }
     } catch (error) {
       console.error('Error loading case studies:', error);
+      setCaseStudies(getLocalCaseStudies(language));
     }
   }, [language]);
 

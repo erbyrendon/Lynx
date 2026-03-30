@@ -3,6 +3,8 @@ import { supabase, type Value } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
 import Tooltip from '../Tooltip';
 import { getLucideIconByName } from '../../lib/icons';
+import { isSupabaseConfigured } from '../../lib/supabase';
+import { getLocalValues } from '../../lib/localContent';
 
 export default function ValuesTab() {
   const { language, t } = useLanguage();
@@ -31,6 +33,12 @@ export default function ValuesTab() {
   }, [values]);
 
   const loadValues = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setValues(getLocalValues(language));
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('values')
@@ -45,6 +53,7 @@ export default function ValuesTab() {
       }
     } catch (error) {
       console.error('Error loading values:', error);
+      setValues(getLocalValues(language));
     } finally {
       setIsLoading(false);
     }

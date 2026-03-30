@@ -3,6 +3,8 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLucideIconByName } from '../../lib/icons';
+import { isSupabaseConfigured } from '../../lib/supabase';
+import { getLocalIndustrySolutions } from '../../lib/localContent';
 
 interface IndustrySolution {
   id: string;
@@ -59,6 +61,12 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
   const t = content[language as keyof typeof content] || content.en;
 
   const loadIndustries = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setIndustries(getLocalIndustrySolutions(language));
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('industry_solutions')
@@ -77,6 +85,7 @@ export default function IndustrySolutionsTab({ onNavigateToIndustry }: IndustryS
       }
     } catch (error) {
       console.error('Error loading industries:', error);
+      setIndustries(getLocalIndustrySolutions(language));
     } finally {
       setIsLoading(false);
     }

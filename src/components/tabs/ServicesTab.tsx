@@ -3,6 +3,8 @@ import { ChevronDown } from 'lucide-react';
 import { supabase, type Discipline } from '../../lib/supabase';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLucideIconByName } from '../../lib/icons';
+import { isSupabaseConfigured } from '../../lib/supabase';
+import { getLocalDisciplines } from '../../lib/localContent';
 
 export default function ServicesTab() {
   const { language, t } = useLanguage();
@@ -21,6 +23,12 @@ export default function ServicesTab() {
   }, [isLoading]);
 
   const loadDisciplines = useCallback(async () => {
+    if (!isSupabaseConfigured) {
+      setDisciplines(getLocalDisciplines(language));
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('disciplines')
@@ -35,6 +43,7 @@ export default function ServicesTab() {
       }
     } catch (error) {
       console.error('Error loading disciplines:', error);
+      setDisciplines(getLocalDisciplines(language));
     } finally {
       setIsLoading(false);
     }
