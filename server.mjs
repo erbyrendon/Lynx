@@ -157,7 +157,7 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Save lead to Google Sheets if webhook URL is configured
-    // ✅ Después - con await, redirect follow y log completo
+    // Después - con await, redirect follow y log completo
     if (GOOGLE_SHEETS_WEBHOOK_URL) {
       try {
         const sheetsRes = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
