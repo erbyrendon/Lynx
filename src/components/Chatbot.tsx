@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2, ArrowRight } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface Message {
@@ -94,9 +94,10 @@ const saveToSupabase = async (
   role: 'user' | 'assistant',
   msgContent: string
 ) => {
-  await supabase
+  if (!isSupabaseConfigured || conversationId.startsWith('local-')) return;
+  void supabase
     .from('chatbot_messages')
-    .insert({ conversation_id: conversationId, role, content: msgContent });
+    .insert({ conversation_id: conversationId, role, content: msgContent }); // fire-and-forget
 };
 
 const makeLocalMessage = (role: 'user' | 'assistant', text: string): Message => ({
@@ -139,41 +140,59 @@ export default function Chatbot() {
   const loadOrCreateConversation = useCallback(async () => {
     const sessionId = getSessionId();
 
-    const { data: existing } = await supabase
-      .from('chatbot_conversations')
-      .select('*')
-      .eq('session_id', sessionId)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Try Supabase only if configured
+    if (isSupabaseConfigured) {
+      try {
+        const { data: existing } = await supabase
+          .from('chatbot_conversations')
+          .select('*')
+          .eq('session_id', sessionId)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-    if (existing) {
-      setConversation(existing);
-      const { data: msgs } = await supabase
-        .from('chatbot_messages')
-        .select('*')
-        .eq('conversation_id', existing.id)
-        .order('created_at', { ascending: true });
-      if (msgs && msgs.length > 0) {
-        setMessages(msgs);
-        setShowInitialOptions(false);
-        return;
+        if (existing) {
+          setConversation(existing);
+          const { data: msgs } = await supabase
+            .from('chatbot_messages')
+            .select('*')
+            .eq('conversation_id', existing.id)
+            .order('created_at', { ascending: true });
+          if (msgs && msgs.length > 0) {
+            setMessages(msgs);
+            setShowInitialOptions(false);
+            return;
+          }
+        }
+
+        const { data: newConv } = await supabase
+          .from('chatbot_conversations')
+          .insert({ session_id: sessionId, language })
+          .select()
+          .single();
+
+        if (newConv) {
+          setConversation(newConv);
+          setMessages([makeLocalMessage('assistant', t.greeting)]);
+          await saveToSupabase(newConv.id, 'assistant', t.greeting);
+          setShowInitialOptions(true);
+          return;
+        }
+      } catch {
+        // fall through to local fallback
       }
     }
 
-    const { data: newConv } = await supabase
-      .from('chatbot_conversations')
-      .insert({ session_id: sessionId, language })
-      .select()
-      .single();
-
-    if (newConv) {
-      setConversation(newConv);
-      setMessages([makeLocalMessage('assistant', t.greeting)]);
-      await saveToSupabase(newConv.id, 'assistant', t.greeting);
-      setShowInitialOptions(true);
-    }
+    // Local fallback — works without Supabase
+    const localConv: Conversation = {
+      id: `local-${sessionId}`,
+      session_id: sessionId,
+      language,
+    };
+    setConversation(localConv);
+    setMessages([makeLocalMessage('assistant', t.greeting)]);
+    setShowInitialOptions(true);
   }, [language, t.greeting]);
 
   useEffect(() => {
