@@ -157,22 +157,28 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Save lead to Google Sheets if webhook URL is configured
+    // ✅ Después - con await, redirect follow y log completo
     if (GOOGLE_SHEETS_WEBHOOK_URL) {
-      fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+      try {
+        const sheetsRes = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        redirect: 'follow',
         body: JSON.stringify({
-          name: normalized.name,
-          email: normalized.email,
-          business: normalized.business,
-          message: normalized.message,
-          source: 'web-contact',
-          status: 'new',
-        }),
-      }).catch(err => {
-        console.error('Google Sheets webhook error:', err.message);
-      });
-    }
+        name: normalized.name,
+        email: normalized.email,
+        business: normalized.business,
+        message: normalized.message,
+        source: 'web-contact',
+        status: 'new',
+      }),
+    });
+    const sheetsBody = await sheetsRes.text();
+    console.log('Sheets response:', sheetsRes.status, sheetsBody);
+  } catch (err) {
+    console.error('Google Sheets webhook error:', err.message);
+  }
+}
 
     if (AUTO_REPLY_ENABLED) {
       const autoReplyHtml = `
