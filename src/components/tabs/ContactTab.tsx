@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -22,6 +22,19 @@ export default function ContactTab() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Pre-fill from chatbot funnel if user came via "Schedule a Consultation" CTA
+  useEffect(() => {
+    const raw = sessionStorage.getItem('lynx_chat_prefill');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      if (data.message) {
+        setFormData(prev => ({ ...prev, message: data.message }));
+      }
+    } catch { /* ignore malformed data */ }
+    sessionStorage.removeItem('lynx_chat_prefill');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
