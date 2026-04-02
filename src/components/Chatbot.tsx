@@ -17,10 +17,10 @@ interface Conversation {
 }
 
 const getSessionId = (): string => {
-  let sessionId = localStorage.getItem('lynx_chat_session');
+  let sessionId = sessionStorage.getItem('lynx_chat_session');
   if (!sessionId) {
     sessionId = crypto.randomUUID();
-    localStorage.setItem('lynx_chat_session', sessionId);
+    sessionStorage.setItem('lynx_chat_session', sessionId);
   }
   return sessionId;
 };
