@@ -7,6 +7,8 @@ import { Key, Languages } from 'lucide-react';
 import { useLanguage } from './contexts/LanguageContext';
 import { isSupabaseConfigured } from './lib/supabase';
 
+const ADMIN_UI_ENABLED = import.meta.env.VITE_ENABLE_ADMIN === '1';
+
 function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   const { language, setLanguage, t } = useLanguage();
@@ -33,7 +35,7 @@ function App() {
           </div>
         </button>
 
-        {isSupabaseConfigured && (
+        {isSupabaseConfigured && ADMIN_UI_ENABLED && (
           <button
             onClick={() => setShowAdmin(!showAdmin)}
             className="p-3 bg-gray-900 hover:bg-gray-800 text-white rounded-full border border-gray-700 hover:border-emerald-500 transition-all duration-300 shadow-lg"
@@ -44,7 +46,7 @@ function App() {
         )}
       </div>
 
-      {showAdmin ? <AdminPanel /> : <TabbedLanding />}
+      {showAdmin && ADMIN_UI_ENABLED ? <AdminPanel /> : <TabbedLanding />}
 
       {isSupabaseConfigured && <Chatbot />}
     </div>
